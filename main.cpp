@@ -10,6 +10,9 @@
 
 #include "util/CS123Common.h"
 
+#define CUSTOM_IMAGE_WIDTH 512
+#define CUSTOM_IMAGE_HEIGHT 512
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
@@ -30,7 +33,7 @@ int main(int argc, char *argv[])
     QString scenefile = args[0];
     QString output = args[1];
 
-    QImage image(IMAGE_WIDTH, IMAGE_HEIGHT, QImage::Format_RGB32);
+    QImage image(CUSTOM_IMAGE_WIDTH, CUSTOM_IMAGE_HEIGHT, QImage::Format_RGB32);
 
     Scene *scene;
     if(!Scene::load(scenefile, &scene)) {
@@ -39,7 +42,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    PathTracer tracer(IMAGE_WIDTH, IMAGE_HEIGHT);
+    PathTracer tracer(CUSTOM_IMAGE_WIDTH, CUSTOM_IMAGE_HEIGHT);
 
     QRgb *data = reinterpret_cast<QRgb *>(image.bits());
 
