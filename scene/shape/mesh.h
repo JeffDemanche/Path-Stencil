@@ -37,6 +37,8 @@ public:
 
     virtual BBox getBBox() const;
 
+    virtual std::vector<Triangle*>* getTriangles() const;
+
     virtual Eigen::Vector3f getCentroid() const;
 
     const Eigen::Vector3i getTriangleIndices(int faceIndex) const;

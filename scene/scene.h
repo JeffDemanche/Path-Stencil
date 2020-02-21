@@ -24,6 +24,8 @@ public:
     void setBVH(const BVH &bvh);
     const BVH& getBVH() const;
 
+    std::vector<Triangle *>* getEmissiveTris() const;
+
     const BasicCamera& getCamera() const;
 
     void setCamera(const BasicCamera& camera);
@@ -38,6 +40,7 @@ private:
 
     BVH *m_bvh;
     std::vector<Object *> *_objects;
+    std::vector<Triangle *> *_emissive_tris;
 
     BasicCamera m_camera;
 

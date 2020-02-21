@@ -83,6 +83,14 @@ Vector3f Triangle::getNormal(const Vector3f &p) const{
     return interpolated_normal;
 }
 
+std::vector<Vector3f*> Triangle::getVerts() {
+    std::vector<Vector3f*> v = std::vector<Vector3f*>();
+    v.push_back(&_v1);
+    v.push_back(&_v2);
+    v.push_back(&_v3);
+    return v;
+}
+
 BBox Triangle::getBBox() const
 {
     return _bbox;
@@ -91,6 +99,11 @@ BBox Triangle::getBBox() const
 Vector3f Triangle::getCentroid() const
 {
     return (_v1 + _v2 + _v3) / 3.f;
+}
+
+float Triangle::getArea() const
+{
+    return 0.5 * ((_v2 - _v1).cross(_v3 - _v1)).norm();
 }
 
 int Triangle::getIndex() const

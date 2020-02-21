@@ -18,9 +18,13 @@ public:
     virtual Eigen::Vector3f getNormal(const IntersectionInfo &I) const;
     virtual Eigen::Vector3f getNormal(const Eigen::Vector3f &p) const;
 
+    virtual std::vector<Eigen::Vector3f*> getVerts();
+
     virtual BBox getBBox() const;
 
     virtual Eigen::Vector3f getCentroid() const;
+
+    float getArea() const;
 
     int getIndex() const;
 

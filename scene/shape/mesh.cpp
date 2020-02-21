@@ -57,6 +57,15 @@ BBox Mesh::getBBox() const
     return _bbox;
 }
 
+std::vector<Triangle*>* Mesh::getTriangles() const
+{
+    std::vector<Triangle*> *tris = new std::vector<Triangle*>;
+    for(int i = 0; i < _faces.size(); i++) {
+        tris->push_back(&_triangles[i]);
+    }
+    return tris;
+}
+
 Vector3f Mesh::getCentroid() const
 {
     //return transform * _centroid;

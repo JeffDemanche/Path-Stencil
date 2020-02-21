@@ -10,8 +10,8 @@
 
 #include "util/CS123Common.h"
 
-#define CUSTOM_IMAGE_WIDTH 512
-#define CUSTOM_IMAGE_HEIGHT 512
+#define CUSTOM_IMAGE_WIDTH 768
+#define CUSTOM_IMAGE_HEIGHT 768
 
 int main(int argc, char *argv[])
 {

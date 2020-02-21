@@ -28,7 +28,8 @@ SOURCES += main.cpp \
     scene/basiccamera.cpp \
     util/CS123XmlSceneParser.cpp \
     scene/shape/mesh.cpp \
-    scene/shape/triangle.cpp
+    scene/shape/triangle.cpp \
+    util/hdrloader.cpp
 
 HEADERS += \
     pathtracer.h \
@@ -78,6 +79,7 @@ HEADERS += \
     scene/shape/Sphere.h \
     scene/shape/mesh.h \
     scene/shape/triangle.h \
+    util/hdrloader.h \
     util/tiny_obj_loader.h \
     BVH/vector3.h \
     Eigen/src/Cholesky/LDLT.h \

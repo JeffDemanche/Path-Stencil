@@ -23,12 +23,19 @@ Scene::Scene()
 
 Scene::~Scene()
 {
+    delete _emissive_tris;
+
     for(unsigned int i = 0; i < _objects->size(); ++i) {
         Object * o = (*_objects)[i];
         delete o;
     }
     delete _objects;
     delete m_bvh;
+}
+
+std::vector<Triangle *> *Scene::getEmissiveTris() const
+{
+    return _emissive_tris;
 }
 
 bool Scene::load(QString filename, Scene **scenePointer)
@@ -75,16 +82,32 @@ void Scene::setBVH(const BVH &bvh)
 
 bool Scene::parseTree(CS123SceneNode *root, Scene *scene, const std::string &baseDir)
 {
+    scene->_emissive_tris = new std::vector<Triangle *>;
+
     std::vector<Object *> *objects = new std::vector<Object *>;
     parseNode(root, Affine3f::Identity(), objects, baseDir);
     if(objects->size() == 0) {
         return false;
     }
+
     std::cout << "Parsed tree, creating BVH" << std::endl;
     BVH *bvh = new BVH(objects);
 
     scene->_objects = objects;
     scene->setBVH(*bvh);
+
+    for (unsigned int i = 0; i < scene->_objects->size(); i++) {
+        Mesh* m = static_cast<Mesh *> (objects->at(i));
+
+        for (unsigned int j = 0; j < m->getTriangles()->size(); j++) {
+            tinyobj::material_t mat = m->getTriangles()->at(j)->getMaterial();
+
+            if (mat.emission[0] + mat.emission[1] + mat.emission[2] > 0) {
+                scene->_emissive_tris->push_back(m->getTriangles()->at(j));
+            }
+        }
+    }
+
     return true;
 }
 
@@ -117,15 +140,14 @@ void Scene::parseNode(CS123SceneNode *node, const Affine3f &parentTransform, std
 
 void Scene::addPrimitive(CS123ScenePrimitive *prim, const Affine3f &transform, std::vector<Object *> *objects, const std::string &baseDir)
 {
-    switch(prim->type) {
-    case PrimitiveType::PRIMITIVE_MESH:
+    if (prim->type == PrimitiveType::PRIMITIVE_MESH) {
         std::cout << "Loading mesh " << prim->meshfile << std::endl;
-        objects->push_back(loadMesh(prim->meshfile, transform, baseDir));
+        Mesh* m = loadMesh(prim->meshfile, transform, baseDir);
+        objects->push_back(m);
         std::cout << "Done loading mesh" << std::endl;
-        break;
-    default:
+    }
+    else {
         std::cerr << "We don't handle any other formats yet" << std::endl;
-        break;
     }
 }
 
