@@ -1,25 +1,44 @@
-#### QT
-The stencil code is written in QT and will therefore require QT Creator to be installed. QT Creator 4.5.0 Community edition has been tested and works.
+# How to Run
 
-#### How to build
-The included project files should be all you need to build, so just open the project in QT Creator and build the project.
+My program takes the following arguments: [scenefile] [output] [samples] [hdrfile] [aperture] [focal]
 
-#### How to run
-The compiled application takes two command line arguments.
-The first argument is the path to the scene file that is being loaded to be rendered.
-The second argument is the path of the file that the rendered image will be written out to.
+ - scenefile - Path to the XML scenefile.
+ - output - Path to the output PNG image.
+ - samples - A positive number of path samples per pixel.
+ - hdrfile - Path to a .hdr lightprobe image (the circular one). If this file can't be found, the environment will be black, so just put some string here to ignore IBL.
+ - aperture - Aperture size, 0 is no DoF, larger values make out of focus regions more out of focus.
+ - focal - Focal distance. Distance at which objects are in focus.
 
-To set these command line arguments in QT, go to the Projects tab on the left, under build and run, under your currently configured kit, click run, and you should have a screen where you can enter command line arguments to run the executable with.
+# Features
 
-Additional command line arguments can be added in main.cpp. The stencil code uses QCommandLineParser to parse the command line arguments, so take a look at the documentation if you want to add more arguments.
+ - BRDFs: Diffuse and Phong BRDFs live in separate functions in `PathTracer.cpp`, but reflections and refractions are more integrated into `traceRay`. I did write separate functions to calculate reflection and refraction vectors, and also for fresnel.
 
-#### About the code
-The main files you should need to edit/look at are pathtracer.cpp and the files in the scene/ directory, however feel free to modify any other code you like.
+ - Soft shadows: `directLightEstimator` calculates direct light intensity for a point. It gets called for every emissive triangle in the scene, and randomly samples incoming light from points that lie on that light. This sampling gives soft shadows.
 
-pathtracer.cpp is the class that gets passed in a scene and an array of pixels to fill in the color for, so this is where you should implement most of the actual path tracing.
+ - Indirect lighting: Implemented in `traceRay`.
 
-In the scene directory, there is the Mesh class, which represents the objects that you are casting rays to collide with. Each mesh has a list of vertices, normals, colors and uvs, all of which are the same length, one for each vertex. They also contain a list of Vector3i's which correspond to the faces of the mesh. Each Vector3i describes a triangle in the mesh and contains 3 indices into the vertex, normal, etc arrays. There is also a list of integers, one for each face, that contains the indices of the material for that face. These indices index into the final array, the material array. This array is loaded from the .mat file that likely comes with the .obj file that you are loading, and will contain whatever material properties were specified for the mesh.
+ - Russian roulette: Paths are terminated with a constant probability `pdf_rr`, and then the lighting vector is normalized by that probability.
 
-#### Scene files
-The stencil code uses a modified version of the CS123 scene files, which are xml files. The full spec for the scene files can be found in scenefile.pdf, however the stencil code only supports primitives of type "mesh". It does not support cubes, cylinders, etc., however meshes can be used to get any of those shapes, and if you want, you can add support for primitives. 
-Some example scenes can be found in the example-scenes directory.
+ - Event splitting: Implemented in `traceRay`.
+
+ - Tonemapping: Using Reinhard operator.
+
+### Extra features
+
+ - Image-based lighting: I use [this](https://www.flipcode.com/archives/HDR_Image_Reader.shtml) library to load .hdr files into memory. HDR files store the three channels for each pixel in a single 32-bit float to save space, so this library parses that. To implement IBL, every ray which doesn't intersect with geometry in the scene is mapped to a pixel on the HDR image according to the equations on [this](https://www.pauldebevec.com/Probes/) site to determine its intensity. I don't have a user-defined control on environment intensity coefficient, but it would be trivial to implement (just multiplying the output of the `sampleHDR` function).
+
+ - Depth of Field: I implemented a simple depth of field with help from [this](https://www.keithlantz.net/2013/03/path-tracer-depth-of-field/) site and [this](https://medium.com/@elope139/depth-of-field-in-path-tracing-e61180417027) article. The variables it introduces are aperture size and focal length.
+
+# Images
+
+cornell_vanilla.png - Cornell box with mirror reflection, refraction, diffuse BRDF, direct and indirect lighting, russian roulette, soft shadows, tonemapping.
+
+conell_dof.png - Cornell box with DoF enabled. You can see the rear sphere is in focus and the near sphere is blurry. Aperture size = 0.2, focal distance = 4.4.
+
+hdr_refraction.png - A dialectric sphere with an HDR image-based lighting map.
+
+hdr_phong.png - A phong-shaded sphere with HDR lighting. This is noisy because the HDR lighting is only computed through indirect rays. This was 250 samples.
+
+indirect.png - Indirect bounce light sampling only. 150 samples.
+
+direct.png - Single bounce direct lighting only.

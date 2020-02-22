@@ -1,3 +1,6 @@
+#ifndef Included_NameModel_H
+
+#define Included_NameModel_H
 
 /***********************************************************************************
 	Created:	17:9:2002
@@ -19,3 +22,4 @@ public:
 	static bool load(const char *fileName, HDRLoaderResult &res);
 };
 
+#endif
