@@ -9,6 +9,10 @@ My program takes the following arguments: [scenefile] [output] [samples] [hdrfil
  - aperture - Aperture size, 0 is no DoF, larger values make out of focus regions more out of focus.
  - focal - Focal distance. Distance at which objects are in focus.
 
+# Bugs
+
+The only bug is I'm hard multiplying all emission values by 5 because otherwise the render is very dark and I can't figure out why.
+
 # Features
 
  - BRDFs: Diffuse and Phong BRDFs live in separate functions in `PathTracer.cpp`, but reflections and refractions are more integrated into `traceRay`. I did write separate functions to calculate reflection and refraction vectors, and also for fresnel.
